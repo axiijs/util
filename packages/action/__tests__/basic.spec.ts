@@ -1,6 +1,14 @@
 /** @vitest-environment jsdom */
 /** @jsx createElement */
-import {Action, SerialAction, STATUS_ABORT, STATUS_PENDING, STATUS_PROCESSING, STATUS_SUCCESS} from "../src/action";
+import {
+    Action,
+    SerialAction,
+    SingleAction,
+    STATUS_ABORT,
+    STATUS_PENDING,
+    STATUS_PROCESSING,
+    STATUS_SUCCESS
+} from "../src/action";
 import {beforeEach, expect, describe, test} from "vitest";
 import {atom, Atom, RxList} from "data0";
 
@@ -126,5 +134,39 @@ describe('serial', () => {
         await p3.resolvers.promise
         await wait(10)
         expect(p3.status.raw).toBe(STATUS_SUCCESS)
+    })
+})
+
+describe('single', () => {
+    let single!: SingleAction<any>
+
+    beforeEach(() => {
+        single = new SingleAction(async (...args: any[]) => {
+            await wait(100)
+            return args
+        }, {})
+    })
+
+    test('single limit', async () => {
+        const p1 = single.run(1,2)
+
+        await wait(10)
+        expect(p1.status.raw).toBe(STATUS_PROCESSING)
+        const p2 = single.run(2,3)
+        expect(p1.status.raw).toBe(STATUS_ABORT)
+
+        await wait(10)
+        expect(p2.status.raw).toBe(STATUS_PROCESSING)
+
+        const p3 = single.run(3,4)
+        expect(p2.status.raw).toBe(STATUS_ABORT)
+        await wait(10)
+        expect(p3.status.raw).toBe(STATUS_PROCESSING)
+
+        await p3.resolvers.promise
+        await wait(10)
+        expect(p3.status.raw).toBe(STATUS_SUCCESS)
+
+
     })
 })
