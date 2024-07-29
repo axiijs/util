@@ -1,0 +1,17 @@
+{
+  "name": "axii-action",
+  "version": "2.0.0",
+  "scripts": {
+    "test": "vitest"
+  },
+  "peerDependencies": {
+    "data0": "^1.7.15"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "jsdom": "^24.1.1",
+    "typescript": "^5.5.4",
+    "vite-tsconfig-paths": "^4.3.2",
+    "vitest": "^2.0.4"
+  }
+}
