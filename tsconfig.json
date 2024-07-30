@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "outDir": "dist",
     "sourceMap": true,
-    "target": "es2016",
+    "target": "es2023",
     "newLine": "LF",
     "useDefineForClassFields": false,
     "module": "esnext",

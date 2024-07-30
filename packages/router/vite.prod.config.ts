@@ -1,4 +1,3 @@
-import {fileURLToPath, URL } from 'url'
 import {resolve} from "path";
 import dts from 'vite-plugin-dts'
 
@@ -8,9 +7,7 @@ export default {
     jsxFragment: 'Fragment',
   },
   resolve: {
-    alias: {
-      '@framework': fileURLToPath(new URL('./src/index.ts', import.meta.url))
-    }
+
   },
   define: {
     __DEV__: false
@@ -18,10 +15,10 @@ export default {
   build: {
     lib: {
       // Could also be a dictionary or array of multiple entry points
-      entry: resolve(__dirname, 'src/index.ts'),
-      name: 'axii',
+      entry: resolve(__dirname, 'src/router.ts'),
+      name: 'AxiiRouter',
       // the proper extensions will be added
-      fileName: 'axii',
+      fileName: 'axii-router',
     },
     sourcemap: 'inline',
     rollupOptions: {
@@ -29,9 +26,8 @@ export default {
     },
   },
   plugins: [dts({
-    tsconfigPath: resolve(__dirname, 'tsconfig.prod.json'),
+    tsconfigPath: resolve(__dirname, '../../tsconfig.prod.json'),
     rollupTypes: true,
-    include: ['src/**/*.ts', 'src/**/*.tsx', 'global.d.ts'],
-    bundledPackages: ['data0']
+    include: ['src/**/*.ts'],
   })]
 }

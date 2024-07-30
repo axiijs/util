@@ -18,9 +18,6 @@
     "lib": ["esnext", "dom"],
     "types": [ "node"],
     "rootDir": ".",
-    "paths": {
-      "@framework": ["./src"]
-    },
     "jsx": "react",
     "jsxFactory": "createElement",
     "jsxFragmentFactory": "Fragment"
