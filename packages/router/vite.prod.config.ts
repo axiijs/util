@@ -22,7 +22,7 @@ export default {
     },
     sourcemap: 'inline',
     rollupOptions: {
-
+        external: ['data0'],
     },
   },
   plugins: [dts({
