@@ -8,32 +8,49 @@ type Handler = {
     title: string
 }
 
-describe('', () => {
+
+describe('define', () => {
+    test('define router', () => {
+        const router = new RxRouter([{
+            path: '/f1/p1',
+            handler: 'f1p1'
+        }, {
+            path: '/f1/p2',
+            handler: 'f1p2'
+        }])
+        expect(router.recognize('/f1/p2')!.handler).toBe('f1p2')
+    })
+})
+
+describe('basic util', () => {
     let router!: RxRouter<Handler>
 
-    beforeEach(()=> {
-        router = new RxRouter<Handler>([{
-            path: '/f1',
-            handler: {
-                title: 'f1',
-            }
-        }, {
-            path: 'f2',
-            handler: {
-                title: 'f2',
-            }
-        }, {
-            path: 'f2',
-            handler: {
-                title: 'f2',
-            }
-        }], createBrowserHistory())
+    beforeEach(() => {
+        // @ts-ignore
+        router = new RxRouter<Handler>(
+            [{
+                path: '/f1',
+                handler: {
+                    title: 'f1',
+                }
+            }, {
+                path: 'f2',
+                handler: {
+                    title: 'f2',
+                }
+            }],
+            // @ts-ignore
+            createBrowserHistory()
+        )
     })
 
-    test('basic util with browser history', () => {
-
+    test('basic util with browser history', async () => {
+        const location = window.location
+        window.history.replaceState({}, "", '/f2')
+        expect(location.pathname === '/f2')
         router.push('/f1')
-        expect(window.location.pathname === '/f1')
+        // expect(window.location.pathname === '/f1')
+        expect(location.pathname === '/f1')
         expect(router.handler()).toMatchObject({title: 'f1'})
 
         router.push('/f2')
@@ -98,7 +115,7 @@ describe('', () => {
                 title: 'p2'
             }
         }, {
-            path : '/',
+            path: '/',
             redirect: '/p1'
         }])
 
@@ -132,7 +149,6 @@ describe('', () => {
     })
 
     test('add child router with handler', () => {
-
         router.push('/f1/p1')
         expect(window.location.pathname === '/f1')
         expect(router.handler()).toMatchObject({title: 'f1'})

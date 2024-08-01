@@ -1,5 +1,5 @@
 import {createBrowserHistory} from "history";
-import {atom, Atom,  ManualCleanup, RxSet} from "data0";
+import {atom, Atom,  ManualCleanup, RxSet} from "axii";
 
 export type InputRouteData<T> = {
     path: string,
@@ -77,11 +77,15 @@ export class RxRouter<T> extends ManualCleanup{
 
             } else {
                 const children = routeNode.children
-                children.set(frag, routeNode ={
-                    children: new Map<string, RouteNode<T>>(),
-                    handler: undefined,
-                    strictHandler: undefined
-                })
+                routeNode = children.get(frag)!
+                if (!routeNode) {
+                    children.set(frag, routeNode ={
+                        children: new Map<string, RouteNode<T>>(),
+                        handler: undefined,
+                        strictHandler: undefined
+                    })
+                }
+
             }
         })
 
@@ -139,6 +143,7 @@ export class RxRouter<T> extends ManualCleanup{
         }
     }
     onHistoryChange = () => {
+        if (this.destroyed) return
         this.pathname(this.history.location.pathname)
         const result = this.recognize(this.history.location.pathname)
         this.handler(result?.handler)
@@ -152,7 +157,6 @@ export class RxRouter<T> extends ManualCleanup{
                 this.push(result.redirect)
             }
         }
-
     }
     derive(path: string = this.path()) {
         const child = new RxRouter<T>([], this.history, `${this.parentPath}${path}`, this)
@@ -179,9 +183,10 @@ export class RxRouter<T> extends ManualCleanup{
             this.history.push(`${this.parentPath}${path}`)
         }
     }
+    public destroyed = false
     destroy() {
-        // FIXME history 没有 destroy api
-        // this.history.destroy()
+        // CAUTION  history 没有 destroy api，所以用这个标记来不执行回调
+        this.destroyed = true
         this.parent?.children.delete(this)
     }
 }

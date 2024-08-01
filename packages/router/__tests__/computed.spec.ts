@@ -3,7 +3,7 @@
 import {RxRouter} from "../src/router";
 import {beforeEach, describe, expect, test} from "vitest";
 import {createBrowserHistory} from "history";
-import {computed} from "data0";
+import {computed} from "axii";
 
 type Handler = {
     title: string
@@ -19,18 +19,11 @@ describe('RxRouter based computed', () => {
                 title: 'f1',
             }
         }, {
-            path: 'f2',
-            handler: {
-                title: 'f2',
-            }
-        }, {
-            path: 'f2',
+            path: '/f2',
             handler: {
                 title: 'f2',
             }
         }], createBrowserHistory())
-
-
     })
 
 
@@ -55,6 +48,7 @@ describe('RxRouter based computed', () => {
             redirect: '/p1'
         }])
 
+
         const title = computed(() => {
             const titleFrags = []
             let pointer: RxRouter<Handler>|undefined = router
@@ -71,8 +65,8 @@ describe('RxRouter based computed', () => {
         })
 
         expect(title()).toBe('f1|p1')
-
         router.push('/f2')
+        expect(router.handler()!.title).toBe('f2')
         expect(title()).toBe('f2')
 
         router.push('/f1/p2')
