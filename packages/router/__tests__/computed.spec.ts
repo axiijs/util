@@ -1,19 +1,19 @@
 /** @vitest-environment jsdom */
 /** @jsx createElement */
-import {RxRouter} from "../src/router";
+import {Router} from "../src";
 import {beforeEach, describe, expect, test} from "vitest";
 import {createBrowserHistory} from "history";
-import {computed} from "axii";
+import {computed} from "data0";
 
 type Handler = {
     title: string
 }
 
 describe('RxRouter based computed', () => {
-    let router!: RxRouter<Handler>
+    let router!: Router<Handler>
 
     beforeEach(()=> {
-        router = new RxRouter<Handler>([{
+        router = new Router<Handler>([{
             path: '/f1',
             handler: {
                 title: 'f1',
@@ -51,7 +51,7 @@ describe('RxRouter based computed', () => {
 
         const title = computed(() => {
             const titleFrags = []
-            let pointer: RxRouter<Handler>|undefined = router
+            let pointer: Router<Handler>|undefined = router
             while(pointer) {
                 if (pointer.handler()) {
                     titleFrags.push(pointer.handler()!.title)
@@ -76,7 +76,7 @@ describe('RxRouter based computed', () => {
     test('computed with dynamic added children', () => {
         const title = computed(() => {
             const titleFrags = []
-            let pointer: RxRouter<Handler>|undefined = router
+            let pointer: Router<Handler>|undefined = router
             while(pointer) {
                 if (pointer.handler()) {
                     titleFrags.push(pointer.handler()!.title)
@@ -103,7 +103,7 @@ describe('RxRouter based computed', () => {
     test('computed with dynamic added redirect children', () => {
         const title = computed(() => {
             const titleFrags = []
-            let pointer: RxRouter<Handler>|undefined = router
+            let pointer: Router<Handler>|undefined = router
             while(pointer) {
                 if (pointer.handler()) {
                     titleFrags.push(pointer.handler()!.title)

@@ -19,7 +19,7 @@ export default {
     },
     sourcemap: true,
     rollupOptions: {
-
+      external: ['data0'],
     },
   },
   plugins: [dts({

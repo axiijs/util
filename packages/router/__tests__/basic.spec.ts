@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 /** @jsx createElement */
-import {RxRouter} from "../src/router";
+import {Router} from "../src";
 import {beforeEach, describe, expect, test} from "vitest";
 import {createBrowserHistory} from "history";
 
@@ -11,7 +11,7 @@ type Handler = {
 
 describe('define', () => {
     test('define router', () => {
-        const router = new RxRouter([{
+        const router = new Router([{
             path: '/f1/p1',
             handler: 'f1p1'
         }, {
@@ -23,11 +23,11 @@ describe('define', () => {
 })
 
 describe('basic util', () => {
-    let router!: RxRouter<Handler>
+    let router!: Router<Handler>
 
     beforeEach(() => {
         // @ts-ignore
-        router = new RxRouter<Handler>(
+        router = new Router<Handler>(
             [{
                 path: '/f1',
                 handler: {

@@ -1,5 +1,5 @@
 import {createBrowserHistory} from "history";
-import {atom, Atom,  ManualCleanup, RxSet} from "axii";
+import {atom, Atom,  ManualCleanup, RxSet} from "data0";
 
 export type InputRouteData<T> = {
     path: string,
@@ -35,19 +35,19 @@ type RouteMatchResult = {
 
 // strict 是用来处理既有参数，又有精确匹配的场景的，例如 /project/:id  和 /project/new
 //  优先精确匹配。
-export class RxRouter<T> extends ManualCleanup{
+export class Router<T> extends ManualCleanup{
     public pathname:Atom<string> = atom('');
     public handler: Atom<T|undefined> = atom(undefined);
     public params: Atom<{[k: string]: any}> = atom({});
     public path: Atom<string> = atom('');
-    public children: RxSet<RxRouter<T>> = new RxSet([])
+    public children: RxSet<Router<T>> = new RxSet([])
     public map: RouteNode<T> = {
         children: new Map<string, RouteNode<T>>(),
         handler: undefined,
         redirect: undefined,
         strictHandler: undefined
     }
-    constructor(public data: InputRouteData<T>[], public history = createBrowserHistory(), public parentPath: string = '', public parent?:RxRouter<T>) {
+    constructor(public data: InputRouteData<T>[], public history = createBrowserHistory(), public parentPath: string = '', public parent?:Router<T>) {
         super()
         data.forEach(i => this.addOne(i))
 
@@ -159,7 +159,7 @@ export class RxRouter<T> extends ManualCleanup{
         }
     }
     derive(path: string = this.path()) {
-        const child = new RxRouter<T>([], this.history, `${this.parentPath}${path}`, this)
+        const child = new Router<T>([], this.history, `${this.parentPath}${path}`, this)
         this.children.add(child)
         return child
     }
