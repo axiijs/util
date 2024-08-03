@@ -15,7 +15,7 @@ export default {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'RxAction',
       // the proper extensions will be added
-      fileName: 'rxaction',
+      fileName: 'index',
     },
     sourcemap: true,
     rollupOptions: {
