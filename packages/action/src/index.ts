@@ -80,7 +80,7 @@ type ActionClassOptions = {
 
 }
 
-export class Index<T extends RunFN> {
+export class Action<T extends RunFN> {
     public processes: RxList<ActionProcess<T>> = new RxList<ActionProcess<T>>([])
     public pendingProcesses: RxList<ActionProcess<T>> = this.processes.filter(p => {
         return p.status() === STATUS_PENDING
@@ -163,13 +163,13 @@ export class Index<T extends RunFN> {
     }
 }
 
-export class SerialAction<T extends (...args:any[]) => any> extends Index<T>{
+export class SerialAction<T extends (...args:any[]) => any> extends Action<T>{
     constructor(public fn: T, options:Omit<ActionClassOptions, 'parallelLimit'> = {}) {
         super(fn, {...options, parallelLimit: 1, pending: { replace: false}})
     }
 }
 
-export class SingleAction<T extends (...args:any[]) => any> extends Index<T>{
+export class SingleAction<T extends (...args:any[]) => any> extends Action<T>{
     constructor(public fn: T, options:Omit<ActionClassOptions, 'parallelLimit'> = {}) {
         super(fn, {...options, parallelLimit: 1, pending: { replace: true}})
     }

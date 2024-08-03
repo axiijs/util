@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 /** @jsx createElement */
 import {
-    Index,
+    Action,
     SerialAction,
     SingleAction,
     STATUS_ABORT,
@@ -21,10 +21,10 @@ function wait(time: number) {
 
 
 describe('parallel', () => {
-    let parallel!: Index<any>
+    let parallel!: Action<any>
 
     beforeEach(() => {
-        parallel = new Index(async (...args: any[]) => {
+        parallel = new Action(async (...args: any[]) => {
             await wait(200)
             return args
         }, {
