@@ -1,14 +1,14 @@
 /** @vitest-environment jsdom */
 /** @jsx createElement */
 import {
-    Action,
+    Index,
     SerialAction,
     SingleAction,
     STATUS_ABORT,
     STATUS_PENDING,
     STATUS_PROCESSING,
     STATUS_SUCCESS
-} from "../src/action";
+} from "../src";
 import {beforeEach, expect, describe, test} from "vitest";
 import {atom, Atom, RxList} from "data0";
 
@@ -21,10 +21,10 @@ function wait(time: number) {
 
 
 describe('parallel', () => {
-    let parallel!: Action<any>
+    let parallel!: Index<any>
 
     beforeEach(() => {
-        parallel = new Action(async (...args: any[]) => {
+        parallel = new Index(async (...args: any[]) => {
             await wait(200)
             return args
         }, {

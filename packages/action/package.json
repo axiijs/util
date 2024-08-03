@@ -1,5 +1,5 @@
 {
-  "name": "axii-action",
+  "name": "rxaction",
   "version": "2.0.0",
   "scripts": {
     "test": "vitest",
@@ -8,13 +8,13 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/axii-action.js",
-      "require": "./dist/axii-action.umd.cjs",
-      "types": "./dist/axii-action.d.ts"
+      "import": "./dist/rxaction.js",
+      "require": "./dist/rxaction.umd.cjs",
+      "types": "./dist/rxaction.d.ts"
     }
   },
   "peerDependencies": {
-    "data0": "^1.7.17"
+    "data0": "^1.7.19"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

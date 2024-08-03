@@ -13,11 +13,11 @@ export default {
     lib: {
       // Could also be a dictionary or array of multiple entry points
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'AxiiAction',
+      name: 'RxAction',
       // the proper extensions will be added
-      fileName: 'axii-action',
+      fileName: 'rxaction',
     },
-    sourcemap: 'inline',
+    sourcemap: true,
     rollupOptions: {
 
     },
