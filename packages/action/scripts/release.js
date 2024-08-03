@@ -18,7 +18,7 @@ try {
   execSync('npm run build')
   const newVersion = execSync(`npm version ${version}`)
   execSync('git add .')
-  execSync(`git commit -m "version: axii-action@${version}"`)
+  execSync(`git commit -m "version: rxaction@${version}"`)
   execSync('git push')
   execSync(`npm publish ./`)
 } catch (e) {
