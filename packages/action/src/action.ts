@@ -37,7 +37,7 @@ export class ActionProcess<T extends RunFN> {
     public data: Atom<any> = atom(null)
     public error: Atom<any> = atom(null)
     // @ts-ignore
-    public resolvers = withResolvers() as {promise:Promise<any>, resolve:()=>void, reject:()=>void}
+    public resolvers = withResolvers() as {promise:Promise<any>, resolve:(data:any)=>void, reject:(e:any)=>void}
     public id: number
     constructor(public fn:T, public args: Parameters<T>) {
         this.id = ActionProcess.id++
@@ -47,8 +47,9 @@ export class ActionProcess<T extends RunFN> {
             throw new Error('ActionProcess is already started')
         }
         this.status(STATUS_PROCESSING)
+        let data:any = undefined
         try {
-            const data = await this.fn(...this.args)
+            data = await this.fn(...this.args)
             // @ts-ignore
             if (this.status.raw !== STATUS_ABORT) {
                 this.data(data)
@@ -58,7 +59,7 @@ export class ActionProcess<T extends RunFN> {
             this.error(e)
             this.status(STATUS_ERROR)
         }
-        this.resolvers.resolve()
+        this.resolvers.resolve(data)
     }
     abort() {
         if(this.status.raw === STATUS_PENDING || this.status.raw === STATUS_PROCESSING) {
@@ -114,7 +115,6 @@ export class Action<T extends RunFN> {
         if (this.completedProcesses.data.length > historyLimit) {
             this.processes.splice(0, this.completedProcesses.data.length - historyLimit)
         }
-
         this.processes.push(process)
         if (!this.promise.raw) {
             this.start()
@@ -158,19 +158,19 @@ export class Action<T extends RunFN> {
         return promise
 
     }
-    latest() {
-        return computed(() => this.processes.at(0))
+    get latest() {
+        return computed<ActionProcess<T>>(() => this.processes.data.at(this.processes.length()-1))
     }
 }
 
 export class SerialAction<T extends (...args:any[]) => any> extends Action<T>{
-    constructor(public fn: T, options:Omit<ActionClassOptions, 'parallelLimit'>) {
+    constructor(public fn: T, options:Omit<ActionClassOptions, 'parallelLimit'> = {}) {
         super(fn, {...options, parallelLimit: 1, pending: { replace: false}})
     }
 }
 
 export class SingleAction<T extends (...args:any[]) => any> extends Action<T>{
-    constructor(public fn: T, options:Omit<ActionClassOptions, 'parallelLimit'>) {
+    constructor(public fn: T, options:Omit<ActionClassOptions, 'parallelLimit'> = {}) {
         super(fn, {...options, parallelLimit: 1, pending: { replace: true}})
     }
 }

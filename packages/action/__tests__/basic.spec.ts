@@ -18,6 +18,8 @@ function wait(time: number) {
     })
 }
 
+
+
 describe('parallel', () => {
     let parallel!: Action<any>
 

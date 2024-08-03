@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitest/config'
 import tsconfigPaths from 'vite-tsconfig-paths'
-import {fileURLToPath, URL} from "url";
+// import {fileURLToPath, URL} from "url";
 
 export default defineConfig({
     define: {
@@ -11,8 +11,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            '@framework': fileURLToPath(new URL('./src/index.ts', import.meta.url)),
-            'data0': fileURLToPath(new URL('../../../data0/src/index.ts', import.meta.url))
+            // 'data0': fileURLToPath(new URL('../../../data0/src/index.ts', import.meta.url))
         }
     },
     plugins: [tsconfigPaths()],
