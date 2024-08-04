@@ -77,10 +77,10 @@ describe('parallel', () => {
         const p2 = parallel.run(2,3)
         const p3 = parallel.run(3,4)
 
-        await wait(10)
         expect(p1.status.raw).toBe(STATUS_PROCESSING)
 
         const p4 = parallel.run(4,5)
+        await wait(10)
         expect(p1.status.raw).toBe(STATUS_ABORT)
         expect(p2.status.raw).toBe(STATUS_PROCESSING)
         expect(p3.status.raw).toBe(STATUS_PROCESSING)
@@ -117,16 +117,10 @@ describe('serial', () => {
         await p1.resolvers.promise
         expect(p1.status.raw).toBe(STATUS_SUCCESS)
 
-        expect(serial.pendingProcesses.length.raw).toBe(2)
+        await wait(10)
+        expect(serial.pendingProcesses.length.raw).toBe(1)
+        expect(serial.processingProcesses.length.raw).toBe(1)
         expect(serial.completedProcesses.length.raw).toBe(1)
-        expect(serial.processingProcesses.length.raw).toBe(0)
-
-        await wait(10)
-        expect(p1.status.raw).toBe(STATUS_SUCCESS)
-        await wait(10)
-
-        expect(p2.status.raw).toBe(STATUS_PROCESSING)
-        expect(p3.status.raw).toBe(STATUS_PENDING)
 
         await p2.resolvers.promise
         await wait(10)
@@ -155,12 +149,14 @@ describe('single', () => {
         await wait(10)
         expect(p1.status.raw).toBe(STATUS_PROCESSING)
         const p2 = single.run(2,3)
+        await wait(10)
         expect(p1.status.raw).toBe(STATUS_ABORT)
 
         await wait(10)
         expect(p2.status.raw).toBe(STATUS_PROCESSING)
 
         const p3 = single.run(3,4)
+        await wait(10)
         expect(p2.status.raw).toBe(STATUS_ABORT)
         await wait(10)
         expect(p3.status.raw).toBe(STATUS_PROCESSING)

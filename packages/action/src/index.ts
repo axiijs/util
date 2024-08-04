@@ -88,7 +88,9 @@ export class Action<T extends RunFN> {
     public processingProcesses: RxList<ActionProcess<T>> = this.processes.filter(p => {
         return p.status() === STATUS_PROCESSING
     })
-    public completedProcesses: RxList<ActionProcess<T>> = this.processes.filter(p => p.status() > STATUS_PROCESSING)
+    public completedProcesses: RxList<ActionProcess<T>> = this.processes.filter(p => {
+        return p.status() > STATUS_PROCESSING
+    })
     resolvers?: {promise:Promise<any>, resolve:()=>void, reject:()=>void}
     public promise: Atom<Promise<any>|null> = atom(null)
     constructor(public fn: T, public options: ActionClassOptions = {}) {
@@ -97,24 +99,6 @@ export class Action<T extends RunFN> {
     run = (...args: Parameters<T>) => {
         const process = new ActionProcess<T>(this.fn, args)
 
-        const {
-            parallelLimit = Infinity,
-            pending = { replace: true, replaceOldest: true},
-            historyLimit = 0
-        } = this.options
-
-        // 超过了能同时处理的数量限制，如果是 replace 就要把之前的 abort 掉
-        if (this.processingProcesses.data.length >= parallelLimit) {
-            if (pending.replace) {
-                const toReplace = this.processingProcesses.data.at(pending.replaceOldest? 0 : -1)!
-                toReplace.abort()
-            }
-        }
-
-        // 删掉已经完成的，从头删除超过 historyLimit 的
-        if (this.completedProcesses.data.length > historyLimit) {
-            this.processes.splice(0, this.completedProcesses.data.length - historyLimit)
-        }
         this.processes.push(process)
         if (!this.promise.raw) {
             this.start()
@@ -126,19 +110,42 @@ export class Action<T extends RunFN> {
             return this.promise.raw
         }
 
+        const {
+            parallelLimit = Infinity,
+            pending = { replace: true, replaceOldest: true},
+            historyLimit = 1
+        } = this.options
+
         const {promise, resolve} = withResolvers()
         this.promise(promise)
 
-        const {parallelLimit = Infinity} = this.options
 
+        // FIXME 对于 replace 的情况应该在这里判断，不能在上面  run 的地方判断，
+        //  因为  once promise then 中执行，可能有新的 run 的会后，上一个还没启动，但是确定了要启动。
         once(() => {
+            // 删掉已经完成的，从头删除超过 historyLimit 的
+            if (this.completedProcesses.data.length > historyLimit) {
+                this.processes.splice(0, this.completedProcesses.data.length - historyLimit)
+            }
+
             // watch pendingProcesses & dispose length change
             if (this.pendingProcesses.length()) {
+
+                // 超过了能同时处理的数量限制，如果是 replace 就要把之前的 abort 掉
+                if (this.processingProcesses.data.length >= parallelLimit) {
+                    if (pending.replace) {
+                        const toReplace = this.processingProcesses.data.at(pending.replaceOldest? 0 : -1)!
+                        toReplace.abort()
+                    }
+                }
+
                 if(this.processingProcesses.length() < parallelLimit) {
                     const process = this.pendingProcesses.data.at(0)!
                     // CAUTION 一定要放到下个 tick，不然会这里就会立刻触发上面的 length 变化，然后 once 又触发。
                     //  data0逻辑里面已经 recomputing 的 computed 遇到重算会认为是依赖脏了，于是直接重算，不会再次 schedule。
-                    Promise.resolve().then(() => process.start())
+                    // if(process.id === 1) debugger
+                    // Promise.resolve().then(() => process.start())
+                    process.start()
                 }
             } else {
                 if (!this.processingProcesses.length()) {
@@ -148,15 +155,9 @@ export class Action<T extends RunFN> {
                     return true
                 }
             }
-        }, (rerun) => {
-            // CAUTION 确保 processingProcesses 和 pendingProcesses 的都变化完了，不然 once 会卡在中间状态触发
-            setTimeout(() => {
-                rerun()
-            }, 1)
         })
 
         return promise
-
     }
     get latest() {
         return computed<ActionProcess<T>>(() => this.processes.data.at(this.processes.length()-1))
