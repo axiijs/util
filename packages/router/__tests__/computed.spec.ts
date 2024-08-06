@@ -2,7 +2,6 @@
 /** @jsx createElement */
 import {Router} from "../src";
 import {beforeEach, describe, expect, test} from "vitest";
-import {createBrowserHistory} from "history";
 import {computed} from "data0";
 
 type Handler = {
@@ -23,7 +22,7 @@ describe('RxRouter based computed', () => {
             handler: {
                 title: 'f2',
             }
-        }], createBrowserHistory())
+        }])
     })
 
 

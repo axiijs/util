@@ -47,7 +47,7 @@ export class Router<T> extends ManualCleanup{
         redirect: undefined,
         strictHandler: undefined
     }
-    constructor(public data: InputRouteData<T>[], public history = createBrowserHistory(), public parentPath: string = '', public parent?:Router<T>) {
+    constructor(public data: InputRouteData<T>[], public parentPath: string = '', public parent?:Router<T>, public history = createBrowserHistory(), ) {
         super()
         data.forEach(i => this.addOne(i))
 
@@ -159,7 +159,7 @@ export class Router<T> extends ManualCleanup{
         }
     }
     derive(path: string = this.path()) {
-        const child = new Router<T>([], this.history, `${this.parentPath}${path}`, this)
+        const child = new Router<T>([],  `${this.parentPath}${path}`, this, this.history,)
         this.children.add(child)
         return child
     }
@@ -191,3 +191,4 @@ export class Router<T> extends ManualCleanup{
     }
 }
 
+export { createBrowserHistory, createHashHistory, createMemoryHistory} from 'history'

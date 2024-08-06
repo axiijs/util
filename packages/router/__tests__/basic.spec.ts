@@ -2,7 +2,6 @@
 /** @jsx createElement */
 import {Router} from "../src";
 import {beforeEach, describe, expect, test} from "vitest";
-import {createBrowserHistory} from "history";
 
 type Handler = {
     title: string
@@ -39,8 +38,6 @@ describe('basic util', () => {
                     title: 'f2',
                 }
             }],
-            // @ts-ignore
-            createBrowserHistory()
         )
     })
 
