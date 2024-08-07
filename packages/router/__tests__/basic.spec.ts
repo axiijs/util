@@ -57,8 +57,8 @@ describe('basic util', () => {
 
     test('with sub router', () => {
         // window.history.pushState({}, '', '/f1')
-        const subRouter = router.derive('/f1')
-        subRouter.add([{
+        const SubRouter = router.derive('/f1')
+        const subRouter = new SubRouter([{
             path: '/p1',
             handler: {
                 title: 'p1'
@@ -71,6 +71,7 @@ describe('basic util', () => {
         }])
 
         // 使用 1 级可以修改
+        debugger
         router.push('/f1/p1')
         expect(window.location.pathname === '/f1/p1')
         expect(router.handler()).toMatchObject({title: 'f1'})
@@ -101,7 +102,8 @@ describe('basic util', () => {
             redirect: '/f1'
         }])
 
-        router.derive('/f1').add([{
+        const SubRouter = router.derive('/f1')
+        new SubRouter([{
             path: '/p1',
             handler: {
                 title: 'p1'
@@ -136,8 +138,8 @@ describe('basic util', () => {
         expect(window.location.pathname === '/f1')
         expect(router.handler()).toMatchObject({title: 'f1'})
 
-        const subRouter = router.derive('/f1')
-        subRouter.add([{
+        const SubRouter = router.derive('/f1')
+        new SubRouter([{
             path: '/',
             redirect: '/p1'
         }])
@@ -150,8 +152,8 @@ describe('basic util', () => {
         expect(window.location.pathname === '/f1')
         expect(router.handler()).toMatchObject({title: 'f1'})
 
-        const subRouter = router.derive('/f1')
-        subRouter.add([{
+        const SubRouter = router.derive('/f1')
+        const subRouter = new SubRouter([{
             path: '/p1',
             handler: {
                 title: 'p1'

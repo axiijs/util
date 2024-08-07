@@ -32,7 +32,8 @@ describe('RxRouter based computed', () => {
             redirect: '/f1'
         }])
 
-        router.derive('/f1').add([{
+        const SubRouter = router.derive('/f1')
+        new SubRouter([{
             path: '/p1',
             handler: {
                 title: 'p1'
@@ -90,7 +91,8 @@ describe('RxRouter based computed', () => {
         router.push('/f1/p1')
         expect(title()).toBe('f1')
 
-        router.derive('/f1').add([{
+        const SubRouter =router.derive('/f1')
+        new SubRouter([{
             path: '/p1',
             handler: {
                 title: 'p1'
@@ -117,7 +119,8 @@ describe('RxRouter based computed', () => {
         router.push('/f1')
         expect(title()).toBe('f1')
 
-        router.derive('/f1').add([{
+        const SubRouter = router.derive('/f1')
+        new SubRouter([{
             path: '/p1',
             handler: {
                 title: 'p1'

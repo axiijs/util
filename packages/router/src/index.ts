@@ -159,9 +159,17 @@ export class Router<T> extends ManualCleanup{
         }
     }
     derive(path: string = this.path()) {
-        const child = new Router<T>([],  `${this.parentPath}${path}`, this, this.history,)
-        this.children.add(child)
-        return child
+        // const child = new Router<T>([],  `${this.parentPath}${path}`, this, this.history,)
+        // this.children.add(child)
+        // return child
+        const base = this
+        const basePath = `${base.parentPath}${path}`
+        return class SubRouter extends Router<T> {
+            constructor(public data: InputRouteData<T>[], public subParentPath: string = '' ) {
+                super(data, `${basePath}${subParentPath}`, base, base.history)
+                base.children.add(this)
+            }
+        }
     }
     redirect(absolutePath: string, reload = false) {
         if (reload) {
