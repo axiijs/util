@@ -9,13 +9,13 @@ export type RecordType<T> ={
 export interface RecordConstructor<T> {
     getId: (raw:T) => any
     load: (...args:any[]) => Promise<T[]>
-    new (raw:T): RecordType<T>
+    new (raw:T, ...rest: any[]): RecordType<T>
 }
 
 // TODO 增加基于页码的缓存？
 export class RxRecords<T> extends RxList<RecordType<T>> {
-    constructor(public RecordClass: RecordConstructor<T>) {
-        super(RecordClass.load)
+    constructor(public RecordClass: RecordConstructor<T>, ...contextArgs: any[]) {
+        super(async () => RecordClass.load(...contextArgs))
     }
     replaceData(newData: T[]) {
         // 1. 对于常见在头尾增删的的情况，应该保持最高性能
