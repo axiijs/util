@@ -15,9 +15,8 @@
       "types": "./dist/index.d.ts"
     }
   },
-  "dependencies": {},
   "peerDependencies": {
-    "data0": "^1.7.19"
+    "data0": "^1.7.24"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
