@@ -210,4 +210,35 @@ describe('RxRemoteRecords', () => {
         expect(mapRuns).toBe(10)
         expect(internalRandomUpdateRuns).toBe(15)
     })
+
+    test('group records', async () => {
+        const pagination = atom({offset:0, limit:10})
+        class SimpleRecord{
+            static getId(item:Item) { return item.id}
+            static async load(): Promise<Item[]> {
+                const data = await getRemoteData(pagination().offset, pagination().limit)
+                return data
+            }
+            get id(){ return this.raw.id}
+            constructor(public raw: Item) {}
+            update(newRecord: Item) {
+                this.raw = newRecord
+            }
+        }
+
+
+        const records = new RxRecords<Item>(SimpleRecord)
+        const grouped = records.groupBy(item => item.id % 2)
+        expect(grouped.get(0)).toBeUndefined()
+
+        await records.cleanPromise
+        expect(records.data.map(i => i.raw)).toMatchObject((new Array(10)).fill(1).map((_, index) => ({
+            id: index,
+            name: `name-${index}`
+        })))
+
+        expect(grouped.get(0)!.length()).toBe(5)
+        expect(grouped.get(1)!.length()).toBe(5)
+
+    })
 })
