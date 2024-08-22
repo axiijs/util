@@ -37,9 +37,9 @@ describe('RxRemoteRecords', () => {
 
     test('get paged records', async () => {
         const pagination = atom({offset:0, limit:10})
-        class SimpleRecord {
+        class SimpleRecord{
             static getId(item:Item) { return item.id}
-            static async load() {
+            static async load(): Promise<Item[]> {
                 const data = await getRemoteData(pagination().offset, pagination().limit)
                 return data
             }

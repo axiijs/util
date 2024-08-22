@@ -1,7 +1,7 @@
 import {RxList} from "data0";
 
-export type RecordType<T> ={
-    id: any
+export type RecordType ={
+    id?: any
     update: (newRecord: any, index: number) => any
     [k:string]: any
 }
@@ -9,12 +9,14 @@ export type RecordType<T> ={
 export interface RecordConstructor<T> {
     getId: (raw:T) => any
     load: (...args:any[]) => Promise<T[]>
-    new (raw:T, ...rest: any[]): RecordType<T>
+    new (raw:T, ...rest: any[]): RecordType
 }
 
 // TODO 增加基于页码的缓存？
-export class RxRecords<T> extends RxList<RecordType<T>> {
-    constructor(public RecordClass: RecordConstructor<T>, ...contextArgs: any[]) {
+// TODO 增加基于 list/feild 的轮询 watch ?
+// TODO 支持本地数据的插入？无 id？
+export class RxRecords<T, U extends RecordConstructor<T> = RecordConstructor<T>> extends RxList<InstanceType<U>> {
+    constructor(public RecordClass: U, ...contextArgs: any[]) {
         super(async () => RecordClass.load(...contextArgs))
     }
     replaceData(newData: T[]) {
@@ -24,12 +26,18 @@ export class RxRecords<T> extends RxList<RecordType<T>> {
         const newIds = new Set(newData.map(raw => this.RecordClass.getId(raw)))
         let oldIndex = 0
         let newIndex = 0
-        let oldRecord:RecordType<T>|undefined = undefined
+        let oldRecord:InstanceType<U>|undefined = undefined
         let newRawData:T|undefined = undefined
         while(true) {
             oldRecord = this.data[oldIndex]
             newRawData = newData[newIndex]
             if (!oldRecord && !newRawData) break
+
+            // 说明是本地数据，直接跳过
+            if (oldRecord && oldRecord.id === undefined) {
+                oldIndex++
+                continue
+            }
 
             if (newRawData && oldRecord) {
                 const oldId = oldRecord.id
@@ -48,7 +56,7 @@ export class RxRecords<T> extends RxList<RecordType<T>> {
                         // 2. newIds 也有 old Id，那么在当前位置，肯定是有新的插入，或者把后面的换到前面来了。
                         if (!oldIds.has(newId)) {
                             // 2.1. 如果没有 oldId，那么就是新的插入
-                            this.splice(oldIndex, 0, new this.RecordClass(newRawData))
+                            this.splice(oldIndex, 0, new this.RecordClass(newRawData) as InstanceType<U>)
                             // oldIndex 前进一位，但实际还是指向的当前没处理的对象
                             oldIndex++
                             // newIndex 前进1位指向下一个
@@ -67,14 +75,14 @@ export class RxRecords<T> extends RxList<RecordType<T>> {
                 }
             } else if (newRawData) {
                 // 3. 如果 oldRecord 不存在，那么就是新的插入
-                this.push(new this.RecordClass(newRawData))
+                this.push(new this.RecordClass(newRawData) as InstanceType<U>)
                 oldIndex++
                 newIndex++
             } else {
-                // 4. 如果 newRecord 不存在但 oldRecord 还有，那么后面全都是删除了
-                this.splice(oldIndex, Infinity)
-                // 直接退出
-                break
+                // 4. 如果 newRecord 不存在但 oldRecord 还有，直接删了，
+                //  继续循环，这里不能直接全部删是因为后面可能还有无 id 的本地数据，
+                //  所还是继续利用这个循环。
+                this.splice(oldIndex, 1)
             }
         }
         // 3. 在重排序的情况下，有两种情况：
