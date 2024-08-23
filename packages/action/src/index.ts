@@ -28,7 +28,6 @@ function withResolvers<T>() {
 
     deferred.promise = new Promise<T>((resolve, reject) => {
         deferred.resolve = (data) => {
-            debugger
             resolve(data)
         }
         deferred.reject = reject;
@@ -151,8 +150,6 @@ export class Action<T extends RunFN> {
                     const process = this.pendingProcesses.data.at(0)!
                     // CAUTION 一定要放到下个 tick，不然会这里就会立刻触发上面的 length 变化，然后 once 又触发。
                     //  data0逻辑里面已经 recomputing 的 computed 遇到重算会认为是依赖脏了，于是直接重算，不会再次 schedule。
-                    // if(process.id === 1) debugger
-                    // Promise.resolve().then(() => process.start())
                     process.start()
                 }
             } else {
