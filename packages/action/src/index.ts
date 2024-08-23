@@ -19,15 +19,22 @@ export type STATUS_TYPE = typeof STATUS_PENDING |typeof STATUS_PROCESSING | type
 export type RunFN = (...args:any[]) => any
 
 
-function withResolvers() {
-    let resolve:(data:any)=>void
-    let reject:(error:any)=>void
-    const promise = new Promise((res, rej) => {
-        resolve = res
-        reject = rej
-    })
-    // @ts-ignore
-    return {promise, resolve, reject}
+function withResolvers<T>() {
+    let deferred: {
+        promise: Promise<T>;
+        resolve: (value: T | PromiseLike<T>) => void;
+        reject: (reason: any) => void;
+    } = {} as any;
+
+    deferred.promise = new Promise<T>((resolve, reject) => {
+        deferred.resolve = (data) => {
+            debugger
+            resolve(data)
+        }
+        deferred.reject = reject;
+    });
+
+    return deferred;
 }
 
 
@@ -64,6 +71,7 @@ export class ActionProcess<T extends RunFN> {
     abort() {
         if(this.status.raw === STATUS_PENDING || this.status.raw === STATUS_PROCESSING) {
             this.status(STATUS_ABORT)
+            this.resolvers.reject(STATUS_ABORT)
         }
     }
 }
