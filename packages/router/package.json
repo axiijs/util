@@ -19,7 +19,7 @@
     "history": "^5.3.0"
   },
   "peerDependencies": {
-    "data0": "^1.7.24"
+    "data0": "^1.7.27"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
