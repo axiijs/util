@@ -15,14 +15,14 @@
     }
   },
   "peerDependencies": {
-    "data0": "^1.7.26"
+    "data0": "^1.7.27"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "jsdom": "^24.1.1",
+    "jsdom": "^25.0.0",
     "typescript": "^5.5.4",
-    "vite-plugin-dts": "^4.0.0-beta.1",
+    "vite-plugin-dts": "^4.1.0",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^2.0.4"
+    "vitest": "^2.0.5"
   }
 }

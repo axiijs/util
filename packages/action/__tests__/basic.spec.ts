@@ -164,7 +164,30 @@ describe('single', () => {
         await p3.resolvers.promise
         await wait(10)
         expect(p3.status.raw).toBe(STATUS_SUCCESS)
+    })
 
+    test('repeated single test', async () => {
+        const p1 = single.run(1,2)
 
+        await wait(10)
+        expect(p1.status.raw).toBe(STATUS_PROCESSING)
+        await wait(110)
+        expect(p1.status.raw).toBe(STATUS_SUCCESS)
+        expect(single.processingProcesses.data.length).toBe(0)
+        expect(single.pendingProcesses.data.length).toBe(0)
+
+        const p2 = single.run(2,3)
+        await wait(10)
+        expect(p2.status.raw).toBe(STATUS_PROCESSING)
+        await wait(110)
+        expect(p2.status.raw).toBe(STATUS_SUCCESS)
+        expect(single.processingProcesses.data.length).toBe(0)
+        expect(single.pendingProcesses.data.length).toBe(0)
+
+        const p3 = single.run(3,4)
+        await wait(10)
+        expect(p3.status.raw).toBe(STATUS_PROCESSING)
+        await wait(110)
+        expect(p3.status.raw).toBe(STATUS_SUCCESS)
     })
 })
