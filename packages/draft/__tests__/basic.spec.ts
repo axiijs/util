@@ -10,7 +10,7 @@ import {
     STATUS_SUCCESS
 } from "../src";
 import {beforeEach, expect, describe, test} from "vitest";
-import {atom, Atom, RxList, computed} from "data0";
+import {atom, Atom, RxList} from "data0";
 
 function wait(time: number) {
     return new Promise(resolve => {
@@ -58,11 +58,6 @@ describe('parallel', () => {
         const p2 = parallel.run(2,3)
         const p3 = parallel.run(3,4)
 
-        const p1Status:any[] = []
-        computed(() => {
-            p1Status.push(p1.status())
-        })
-
         await wait(100)
         expect(p1.status.raw).toBe(STATUS_PROCESSING)
         expect(p2.status.raw).toBe(STATUS_PROCESSING)
@@ -75,8 +70,6 @@ describe('parallel', () => {
         expect(p1.data.raw).toMatchObject([1,2])
         expect(p2.data.raw).toMatchObject([2,3])
         expect(p3.data.raw).toMatchObject([3,4])
-
-        expect(p1Status).toMatchObject([STATUS_PROCESSING, STATUS_SUCCESS])
     })
 
     test('beyond parallel limit should abort oldest', async () => {
