@@ -16,7 +16,7 @@ export const STATUS_ABORT= 4
 export type STATUS_TYPE = typeof STATUS_PENDING |typeof STATUS_PROCESSING | typeof STATUS_SUCCESS | typeof STATUS_ERROR | typeof STATUS_ABORT
 
 
-export type RunFN = (...args:any[]) => any
+export type RunFN<T> = (this:T, ...args:any[]) => any
 
 
 function withResolvers<T>() {
@@ -37,15 +37,18 @@ function withResolvers<T>() {
 }
 
 
-export class ActionProcess<T extends RunFN> {
+export class ActionProcess<T extends RunFN<any>> {
     static id = 1
     public status: Atom<STATUS_TYPE> = atom(STATUS_PENDING)
     public data: Atom<any> = atom(null)
+    public progress: Atom<any> = atom(null)
     public error: Atom<any> = atom(null)
     // @ts-ignore
     public resolvers = withResolvers() as {promise:Promise<any>, resolve:(data:any)=>void, reject:(e:any)=>void}
     public id: number
-    constructor(public fn:T, public args: Parameters<T>) {
+    public fn: RunFN<ActionProcess<T>>
+    constructor(fn:T, public args: Parameters<T>) {
+        this.fn = fn.bind(this, ...this.args)
         this.id = ActionProcess.id++
     }
     start = async () => {
@@ -55,7 +58,7 @@ export class ActionProcess<T extends RunFN> {
         this.status(STATUS_PROCESSING)
         let data:any = undefined
         try {
-            data = await this.fn(...this.args)
+            data = await this.fn()
             // @ts-ignore
             if (this.status.raw !== STATUS_ABORT) {
                 this.data(data)
@@ -87,7 +90,7 @@ type ActionClassOptions = {
 
 }
 
-export class Action<T extends RunFN> {
+export class Action<T extends RunFN<any>> {
     public processes: RxList<ActionProcess<T>> = new RxList<ActionProcess<T>>([])
     public pendingProcesses: RxList<ActionProcess<T>> = this.processes.filter(p => {
         return p.status() === STATUS_PENDING
