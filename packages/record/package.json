@@ -15,7 +15,7 @@
     }
   },
   "peerDependencies": {
-    "data0": "^1.7.27"
+    "data0": "^1.7.28"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
