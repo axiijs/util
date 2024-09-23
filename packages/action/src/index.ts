@@ -47,6 +47,7 @@ export class ActionProcess<T extends RunFN<any>> {
     public resolvers = withResolvers() as {promise:Promise<any>, resolve:(data:any)=>void, reject:(e:any)=>void}
     public id: number
     public fn: RunFN<ActionProcess<T>>
+    public abortCallbacks = new Set<() => any>()
     constructor(fn:T, public args: Parameters<T>) {
         this.fn = fn.bind(this, ...this.args)
         this.id = ActionProcess.id++
@@ -74,7 +75,11 @@ export class ActionProcess<T extends RunFN<any>> {
         if(this.status.raw === STATUS_PENDING || this.status.raw === STATUS_PROCESSING) {
             this.status(STATUS_ABORT)
             this.resolvers.reject(STATUS_ABORT)
+            this.abortCallbacks.forEach(fn => fn())
         }
+    }
+    onAbort = (fn:()=>any) => {
+        this.abortCallbacks.add(fn)
     }
 }
 
