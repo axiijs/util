@@ -1,7 +1,8 @@
 /** @vitest-environment jsdom */
 /** @jsx createElement */
 import {
-    Action, ActionProcess,
+    Action,
+    ActionProcess,
     SerialAction,
     SingleAction,
     STATUS_ABORT,
@@ -9,8 +10,7 @@ import {
     STATUS_PROCESSING,
     STATUS_SUCCESS
 } from "../src";
-import {beforeEach, expect, describe, test} from "vitest";
-import {atom, Atom, RxList, computed} from "data0";
+import {beforeEach, describe, expect, test} from "vitest";
 
 function wait(time: number) {
     return new Promise(resolve => {

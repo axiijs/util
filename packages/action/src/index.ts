@@ -64,12 +64,13 @@ export class ActionProcess<T extends RunFN<any>> {
             if (this.status.raw !== STATUS_ABORT) {
                 this.data(data)
                 this.status(STATUS_SUCCESS)
+                this.resolvers.resolve(data)
             }
         } catch (e) {
             this.error(e)
             this.status(STATUS_ERROR)
+            this.resolvers.reject(e)
         }
-        this.resolvers.resolve(data)
     }
     abort() {
         if(this.status.raw === STATUS_PENDING || this.status.raw === STATUS_PROCESSING) {
